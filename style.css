@@ -1,3 +1,104 @@
 * {
     box-sizing: border-box;
 }
+
+body {
+    text-align: center;
+}
+
+button {
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.game {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 800px;
+    height: 500px;
+    background: url(./img/background.png) center/cover;
+    border-radius: 20px 20px 0 0;
+}
+
+.game__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.game__header .game__button {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    background-color: wheat;
+    border: 4px solid black;
+    transition: all 300ms ease-in;
+}
+
+.game__header .game__button:hover {
+    transform: scale(1.1);
+}
+
+.game__timer {
+    margin-top: 8px;
+    width: 100px;
+    font-size: 32px;
+    background-color: white;
+    text-align: center;
+    border: 5px solid black;
+    border-radius: 20px;
+}
+
+.game__score {
+    margin-top: 8px;
+    width: 50px;
+    height: 50px;
+    font-size: 40px;
+    color: white;
+    background-color: darksalmon;
+    border: 3px solid black;
+    border-radius: 50%;
+    text-align: center;
+}
+
+.game__field {
+    position: relative;
+    margin-top: 40px;
+    width: 100%;
+    height: 100%;
+}
+
+.pop-up {
+    display: block;
+    margin: auto;
+    padding: 20px;
+    width: 400px;
+    height: 140px;
+    /* background-color에 색상을 주고 숫자를 적어주면 해당 배경색상에 숫자 %만큼 opcaity가 적용됩니다. */
+    background-color: #00000090;
+    color: white;
+    text-align: center;
+    border-radius: 20px;
+    transform: translateY(-150%);
+}
+
+.pop-up--hide {
+    display: none;
+}
+
+.pop-up__refresh {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    background-color: wheat;
+    border: 2px solid black;
+    border-radius: 50%;
+}
+
+.pop-up__message {
+    display: block;
+    font-size: 38px;
+}
