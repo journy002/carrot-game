@@ -23,10 +23,25 @@ gameBtn.addEventListener("click", () => {
     console.log(started);
 });
 
+function timeCount() {
+    let time = 10;
+    let sec = "";
+    let x = setInterval(function () {
+        sec = parseInt(time % 60);
+        gameTimer.innerHTML = sec + "초";
+        time--;
+        if (sec < 1) {
+            clearInterval(x); // setInterval() 종료
+            gameTimer.innerHTML = "초과";
+        }
+    }, 1000);
+}
+
 function startGame() {
     initGame();
     showStopButton();
     showTimerAndScore();
+    timeCount();
 }
 
 function stopGame() {
