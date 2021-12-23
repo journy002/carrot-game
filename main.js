@@ -9,12 +9,24 @@ const fieldRect = field.getBoundingClientRect();
 const gameBtn = document.querySelector(".game__button");
 const gameTimer = document.querySelector(".game__timer");
 const gameScore = document.querySelector(".game__score");
+const popUp = document.querySelector(".pop-up");
+const restart = document.querySelector(".pop-up__refresh");
 
 let started = false;
 let score = 0;
 let timer = undefined; // timer가 시적되면 타이머가 시간을 기억하고 있어야 합니다.
 
 gameBtn.addEventListener("click", () => {
+    if (started) {
+        stopGame();
+    } else {
+        startGame();
+    }
+    started = !started;
+    console.log(started);
+});
+// replay btn 클릭 이벤트
+restart.addEventListener("click", () => {
     if (started) {
         stopGame();
     } else {
@@ -34,6 +46,12 @@ function startGameTimer() {
         }
         updateTimerText(--remainingTimeSec);
     }, 1000);
+    popUp.classList.add("pop-up--hide");
+}
+
+function stopGameTimer() {
+    timer = clearInterval(timer);
+    popUp.classList.remove("pop-up--hide");
 }
 
 function updateTimerText(time) {
@@ -66,6 +84,7 @@ function startGame() {
 
 function stopGame() {
     showPlayButton();
+    stopGameTimer();
 }
 
 function showPlayButton() {
