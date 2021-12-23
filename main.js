@@ -2,6 +2,7 @@
 const CARROT_SIZE = 80;
 const CARROT_COUNT = 5;
 const BUG_COUNT = 5;
+const GAME__DURATION_SEC = 5;
 
 const field = document.querySelector(".game__field");
 const fieldRect = field.getBoundingClientRect();
@@ -23,13 +24,32 @@ gameBtn.addEventListener("click", () => {
     console.log(started);
 });
 
+function startGameTimer() {
+    let remainingTimeSec = GAME__DURATION_SEC;
+    updateTimerText(remainingTimeSec);
+    timer = setInterval(() => {
+        if (remainingTimeSec <= 0) {
+            clearInterval(timer);
+            return;
+        }
+        updateTimerText(--remainingTimeSec);
+    }, 1000);
+}
+
+function updateTimerText(time) {
+    const minutes = Math.floor(time / 60); // Math.floor을 이용해 소수점 자리는 떨어지도록 해준다.
+    const seconds = time % 60;
+    gameTimer.innerText = `${minutes}:${seconds}`;
+}
+
 function timeCount() {
-    let time = 10;
+    let time = 5;
     let sec = "";
     let x = setInterval(function () {
         sec = parseInt(time % 60);
-        gameTimer.innerHTML = sec + "초";
+        gameTimer.innerHTML = sec;
         time--;
+
         if (sec < 1) {
             clearInterval(x); // setInterval() 종료
             gameTimer.innerHTML = "초과";
@@ -41,7 +61,7 @@ function startGame() {
     initGame();
     showStopButton();
     showTimerAndScore();
-    timeCount();
+    startGameTimer();
 }
 
 function stopGame() {
