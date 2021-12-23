@@ -10,11 +10,15 @@ const gameBtn = document.querySelector(".game__button");
 const gameTimer = document.querySelector(".game__timer");
 const gameScore = document.querySelector(".game__score");
 const popUp = document.querySelector(".pop-up");
+const popUpText = document.querySelector(".pop-up__message");
 const restart = document.querySelector(".pop-up__refresh");
 
 let started = false;
 let score = 0;
 let timer = undefined; // timer가 시적되면 타이머가 시간을 기억하고 있어야 합니다.
+
+// (e) => onFieldClick(event); = onFieldClick; 생략버전
+field.addEventListener("click", onFieldClick);
 
 gameBtn.addEventListener("click", () => {
     if (started) {
@@ -22,18 +26,46 @@ gameBtn.addEventListener("click", () => {
     } else {
         startGame();
     }
-    started = !started;
-    console.log(started);
+    // started = !started; 처음엔 여기에 적어줬지만 재시작을 위해 startGame함수와 stopGame 함수에 각각 started의 상태를 적어주는게 좋다.
 });
+
+function startGame() {
+    started = true;
+    initGame();
+    showStopButton();
+    showTimerAndScore();
+    startGameTimer();
+}
+
+function stopGame() {
+    started = false;
+    stopGameTimer();
+    hideGameButton();
+    showPopUpWithText("REPLAY?");
+    // showPlayButton();
+    // stopGameTimer();
+}
+
+function finishGame(win) {
+    started = false;
+    hideGameButton();
+    showPopUpWithText(win ? "YOU WON!" : "YOU LOST!");
+}
+
 // replay btn 클릭 이벤트
+// restart.addEventListener("click", () => {
+//     if (started) {
+//         stopGame();
+//     } else {
+//         startGame();
+//     }
+//     started = !started;
+//     console.log(started);
+// });
+
 restart.addEventListener("click", () => {
-    if (started) {
-        stopGame();
-    } else {
-        startGame();
-    }
-    started = !started;
-    console.log(started);
+    startGame();
+    hidePopUp();
 });
 
 function startGameTimer() {
@@ -42,6 +74,7 @@ function startGameTimer() {
     timer = setInterval(() => {
         if (remainingTimeSec <= 0) {
             clearInterval(timer);
+            finishGame(CARROT_COUNT === score);
             return;
         }
         updateTimerText(--remainingTimeSec);
@@ -50,14 +83,27 @@ function startGameTimer() {
 }
 
 function stopGameTimer() {
-    timer = clearInterval(timer);
-    popUp.classList.remove("pop-up--hide");
+    clearInterval(timer);
 }
+
+// function stopGameTimer() {
+//     timer = clearInterval(timer);
+//     popUp.classList.remove("pop-up--hide");
+// }
 
 function updateTimerText(time) {
     const minutes = Math.floor(time / 60); // Math.floor을 이용해 소수점 자리는 떨어지도록 해준다.
     const seconds = time % 60;
     gameTimer.innerText = `${minutes}:${seconds}`;
+}
+
+function showPopUpWithText(text) {
+    popUpText.innerText = text;
+    popUp.classList.remove("pop-up--hide");
+}
+
+function hidePopUp() {
+    popUp.classList.add("pop-up--hide");
 }
 
 function timeCount() {
@@ -75,18 +121,6 @@ function timeCount() {
     }, 1000);
 }
 
-function startGame() {
-    initGame();
-    showStopButton();
-    showTimerAndScore();
-    startGameTimer();
-}
-
-function stopGame() {
-    showPlayButton();
-    stopGameTimer();
-}
-
 function showPlayButton() {
     const icon = gameBtn.querySelector(".fa-stop");
     icon.classList.add("fa-play");
@@ -94,9 +128,13 @@ function showPlayButton() {
 }
 
 function showStopButton() {
-    const icon = gameBtn.querySelector(".fa-play");
+    const icon = gameBtn.querySelector(".fas");
     icon.classList.add("fa-stop");
     icon.classList.remove("fa-play");
+}
+
+function hideGameButton() {
+    gameBtn.style.visibility = "hidden";
 }
 
 function showTimerAndScore() {
@@ -111,6 +149,31 @@ function initGame() {
     console.log(fieldRect);
     addItem("carrot", CARROT_COUNT, "./img/carrot.png");
     addItem("bug", BUG_COUNT, "./img/bug.png");
+}
+
+function onFieldClick(event) {
+    if (!started) {
+        return;
+    }
+    const target = event.target;
+    // matches('') css 셀렉터가 해당하는지 확인합니다.
+    if (target.matches(".carrot")) {
+        // 당근
+        target.remove();
+        score++;
+        updateScoreBoard();
+        if (score === CARROT_COUNT) {
+            finishGame(true);
+        }
+    } else if (target.matches(".bug")) {
+        // 벌레
+        stopGameTimer();
+        finishGame(false);
+    }
+}
+
+function updateScoreBoard() {
+    gameScore.innerText = CARROT_COUNT - score;
 }
 
 function addItem(className, count, imgPath) {
