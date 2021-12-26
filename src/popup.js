@@ -9,7 +9,7 @@ export default class PopUp {
         this.restart.addEventListener("click", () => {
             // 등록된 onClick 함수가 있으면 true이기 때문에 뒤에 onClick을 호출한다.
             this.onClick && this.onClick();
-            hide();
+            this.hide();
         });
     }
 

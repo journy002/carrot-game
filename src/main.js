@@ -6,8 +6,10 @@ const CARROT_COUNT = 5;
 const BUG_COUNT = 5;
 const GAME__DURATION_SEC = 10;
 
-const field = document.querySelector(".game__field");
-const fieldRect = field.getBoundingClientRect();
+// Add in Field class
+// const field = document.querySelector(".game__field");
+// const fieldRect = field.getBoundingClientRect();
+
 const gameBtn = document.querySelector(".game__button");
 const gameTimer = document.querySelector(".game__timer");
 const gameScore = document.querySelector(".game__score");
@@ -53,8 +55,8 @@ function stopGame() {
     started = false;
     stopGameTimer();
     hideGameButton();
-    gameFinishiBanner.showWithText("REPLAY??");
     // showPopUpWithText("REPLAY?"); popup.js에 팝업텍스트 관련 맴버함수를 만들어줬기 때문에 지워준다.
+    gameFinishiBanner.showWithText("REPLAY??");
     playSound(alertSound);
     stopSound(bgSound);
     // showPlayButton();
@@ -171,55 +173,59 @@ function showTimerAndScore() {
 
 function initGame() {
     score = 0;
-    field.innerHTML = "";
     gameScore.innerText = CARROT_COUNT;
+
+    // field.js에 추가
+    // field.innerHTML = "";
     // 벌레와 당근을 생선한뒤 field에 추가해줍니다.
-    addItem("carrot", CARROT_COUNT, "./img/carrot.png");
-    addItem("bug", BUG_COUNT, "./img/bug.png");
+    // addItem("carrot", CARROT_COUNT, "./img/carrot.png");
+    // addItem("bug", BUG_COUNT, "./img/bug.png");
 }
 
-function addItem(className, count, imgPath) {
-    const x1 = 0;
-    const y1 = 0;
-    // img는 x,y축의 랜덤 값을 받아 position을 통해 자리를 잡는다.
-    // game__field 제일 하단에 자리를 잡을 경우 (x,y)축 기준에서 이미지의 크기 만큼 자리를 잡기 때문에
-    // fieldRect.width(height)에서 사이즈가 가장 큰 당근 이미지의 크기 만큼 빼줘야 필드 밖으로 벗어나는 상황을 직면하지 않는다.
-    const x2 = fieldRect.width - CARROT_SIZE;
-    const y2 = fieldRect.height - CARROT_SIZE;
+// function addItem(className, count, imgPath) {
+//     const x1 = 0;
+//     const y1 = 0;
+//     // img는 x,y축의 랜덤 값을 받아 position을 통해 자리를 잡는다.
+//     // game__field 제일 하단에 자리를 잡을 경우 (x,y)축 기준에서 이미지의 크기 만큼 자리를 잡기 때문에
+//     // fieldRect.width(height)에서 사이즈가 가장 큰 당근 이미지의 크기 만큼 빼줘야 필드 밖으로 벗어나는 상황을 직면하지 않는다.
+//     const x2 = fieldRect.width - CARROT_SIZE;
+//     const y2 = fieldRect.height - CARROT_SIZE;
 
-    for (let i = 0; i < count; i++) {
-        const item = document.createElement("img");
-        item.setAttribute("class", className);
-        item.setAttribute("src", imgPath);
-        item.style.position = "absolute";
-        const x = randomNumber(x1, x2);
-        const y = randomNumber(y1, y2);
+//     for (let i = 0; i < count; i++) {
+//         const item = document.createElement("img");
+//         item.setAttribute("class", className);
+//         item.setAttribute("src", imgPath);
+//         item.style.position = "absolute";
+//         const x = randomNumber(x1, x2);
+//         const y = randomNumber(y1, y2);
 
-        item.style.left = `${x}px`;
-        item.style.top = `${y}px`;
-        field.appendChild(item);
-    }
-}
+//         item.style.left = `${x}px`;
+//         item.style.top = `${y}px`;
+//         field.appendChild(item);
+//     }
+// }
 
 function onFieldClick(event) {
     if (!started) {
         return;
     }
-    const target = event.target;
-    // matches('') css 셀렉터가 해당하는지 확인합니다.
-    if (target.matches(".carrot")) {
-        // 당근
-        target.remove();
-        score++;
-        playSound(carrotSound);
-        updateScoreBoard();
-        if (score === CARROT_COUNT) {
-            finishGame(true);
-        }
-    } else if (target.matches(".bug")) {
-        // 벌레
-        finishGame(false);
-    }
+
+    //field.js는 게임이 시작이 되었는지 아닌지 모르기 때문에 상단 코드는 가져가지 않습니다.
+    // const target = event.target;
+    // // matches('') css 셀렉터가 해당하는지 확인합니다.
+    // if (target.matches(".carrot")) {
+    //     // 당근
+    //     target.remove();
+    //     score++;
+    //     playSound(carrotSound);
+    //     updateScoreBoard();
+    //     if (score === CARROT_COUNT) {
+    //         finishGame(true);
+    //     }
+    // } else if (target.matches(".bug")) {
+    //     // 벌레
+    //     finishGame(false);
+    // }
 }
 
 function playSound(sound) {
