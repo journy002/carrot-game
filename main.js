@@ -13,7 +13,12 @@ const popUp = document.querySelector(".pop-up");
 const popUpText = document.querySelector(".pop-up__message");
 const restart = document.querySelector(".pop-up__refresh");
 
+const bgSound = new Audio("./sound/bg.mp3");
+const alertSound = new Audio("./sound/alert.wav");
 const carrotSound = new Audio("./sound/carrot_pull.mp3");
+const bugSound = new Audio("./sound/bug_pull.mp3");
+const winSound = new Audio("./sound/game_win.mp3");
+
 let started = false;
 let score = 0;
 let timer = undefined; // timer가 시적되면 타이머가 시간을 기억하고 있어야 합니다.
@@ -32,11 +37,11 @@ gameBtn.addEventListener("click", () => {
 
 function startGame() {
     started = true;
-    score = 0;
     initGame();
     showStopButton();
     showTimerAndScore();
     startGameTimer();
+    playSound(bgSound);
 }
 
 function stopGame() {
@@ -44,6 +49,8 @@ function stopGame() {
     stopGameTimer();
     hideGameButton();
     showPopUpWithText("REPLAY?");
+    playSound(alertSound);
+    stopSound(bgSound);
     // showPlayButton();
     // stopGameTimer();
 }
@@ -51,6 +58,13 @@ function stopGame() {
 function finishGame(win) {
     started = false;
     hideGameButton();
+    if (win) {
+        playSound(winSound);
+    } else {
+        playSound(bugSound);
+    }
+    stopGameTimer();
+    stopSound(bgSound);
     showPopUpWithText(win ? "YOU WON!" : "YOU LOST!");
 }
 
@@ -145,6 +159,7 @@ function showTimerAndScore() {
 }
 
 function initGame() {
+    score = 0;
     field.innerHTML = "";
     gameScore.innerText = CARROT_COUNT;
     // 벌레와 당근을 생선한뒤 field에 추가해줍니다.
@@ -172,13 +187,17 @@ function onFieldClick(event) {
         }
     } else if (target.matches(".bug")) {
         // 벌레
-        stopGameTimer();
         finishGame(false);
     }
 }
 
 function playSound(sound) {
+    sound.currentTime = 0;
     sound.play();
+}
+
+function stopSound(sound) {
+    sound.pause();
 }
 
 function updateScoreBoard() {
