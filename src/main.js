@@ -1,5 +1,6 @@
 "use strict";
 import Popup from "./popup.js";
+import Field from "./field.js";
 
 const CARROT_SIZE = 80;
 const CARROT_COUNT = 5;
@@ -16,7 +17,7 @@ const gameScore = document.querySelector(".game__score");
 
 const bgSound = new Audio("./sound/bg.mp3");
 const alertSound = new Audio("./sound/alert.wav");
-const carrotSound = new Audio("./sound/carrot_pull.mp3");
+const carrotSound = new Audio("./sound/carrot_pull.mp3"); // field.js 추가 //
 const bugSound = new Audio("./sound/bug_pull.mp3");
 const winSound = new Audio("./sound/game_win.mp3");
 
@@ -30,8 +31,31 @@ gameFinishiBanner.setClickListener(() => {
     startGame();
 });
 
+const gameField = new Field(CARROT_COUNT, BUG_COUNT);
+gameField.setClickListener(onItemClick);
+
+// onFieldClick함수에서 field.js에 필드관련 코드를 넘겨주었다.
+// 필드 관련 파일에는 당근을 만들고 맺칭해서 지우고 소리를 넣는 역할이기 때문에
+// 스코어 관련은 여기서 작업을 해주었다.
+function onItemClick(item) {
+    if (!started) {
+        return;
+    }
+    if (item === "carrot") {
+        // 당근
+        score++;
+        updateScoreBoard();
+        if (score === CARROT_COUNT) {
+            finishGame(true);
+        }
+    } else if (item === "bug") {
+        // 벌레
+        finishGame(false);
+    }
+}
+
 // (e) => onFieldClick(event); = onFieldClick; 생략버전
-field.addEventListener("click", onFieldClick);
+// field.addEventListener("click", onFieldClick);
 
 gameBtn.addEventListener("click", () => {
     if (started) {
@@ -174,7 +198,7 @@ function showTimerAndScore() {
 function initGame() {
     score = 0;
     gameScore.innerText = CARROT_COUNT;
-
+    gameField.init();
     // field.js에 추가
     // field.innerHTML = "";
     // 벌레와 당근을 생선한뒤 field에 추가해줍니다.
@@ -205,33 +229,34 @@ function initGame() {
 //     }
 // }
 
-function onFieldClick(event) {
-    if (!started) {
-        return;
-    }
+// function onFieldClick(event) {
+//     if (!started) {
+//         return;
+//     }
 
-    //field.js는 게임이 시작이 되었는지 아닌지 모르기 때문에 상단 코드는 가져가지 않습니다.
-    // const target = event.target;
-    // // matches('') css 셀렉터가 해당하는지 확인합니다.
-    // if (target.matches(".carrot")) {
-    //     // 당근
-    //     target.remove();
-    //     score++;
-    //     playSound(carrotSound);
-    //     updateScoreBoard();
-    //     if (score === CARROT_COUNT) {
-    //         finishGame(true);
-    //     }
-    // } else if (target.matches(".bug")) {
-    //     // 벌레
-    //     finishGame(false);
-    // }
-}
+//     //field.js는 게임이 시작이 되었는지 아닌지 모르기 때문에 상단 코드는 가져가지 않습니다.
+//     // const target = event.target;
+//     // // matches('') css 셀렉터가 해당하는지 확인합니다.
+//     // if (target.matches(".carrot")) {
+//     //     // 당근
+//     //     target.remove();
+//     //     score++;
+//     //     playSound(carrotSound);
+//     //     updateScoreBoard();
+//     //     if (score === CARROT_COUNT) {
+//     //         finishGame(true);
+//     //     }
+//     // } else if (target.matches(".bug")) {
+//     //     // 벌레
+//     //     finishGame(false);
+//     // }
+// }
 
-function playSound(sound) {
-    sound.currentTime = 0;
-    sound.play();
-}
+// field.js
+// function playSound(sound) {
+//     sound.currentTime = 0;
+//     sound.play();
+// }
 
 function stopSound(sound) {
     sound.pause();
@@ -241,6 +266,11 @@ function updateScoreBoard() {
     gameScore.innerText = CARROT_COUNT - score;
 }
 
-function randomNumber(min, max) {
-    return Math.random() * (max - min) + min;
+// field.js
+// function randomNumber(min, max) {
+//     return Math.random() * (max - min) + min;
+// }
+function playSound(sound) {
+    sound.currentTime = 0;
+    sound.play();
 }
