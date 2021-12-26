@@ -1,4 +1,6 @@
 "use strict";
+import Popup from "./popup.js";
+
 const CARROT_SIZE = 80;
 const CARROT_COUNT = 5;
 const BUG_COUNT = 5;
@@ -9,9 +11,6 @@ const fieldRect = field.getBoundingClientRect();
 const gameBtn = document.querySelector(".game__button");
 const gameTimer = document.querySelector(".game__timer");
 const gameScore = document.querySelector(".game__score");
-const popUp = document.querySelector(".pop-up");
-const popUpText = document.querySelector(".pop-up__message");
-const restart = document.querySelector(".pop-up__refresh");
 
 const bgSound = new Audio("./sound/bg.mp3");
 const alertSound = new Audio("./sound/alert.wav");
@@ -22,6 +21,12 @@ const winSound = new Audio("./sound/game_win.mp3");
 let started = false;
 let score = 0;
 let timer = undefined; // timer가 시적되면 타이머가 시간을 기억하고 있어야 합니다.
+
+// Popup 생성자 사용하여 팝업 만들기
+const gameFinishiBanner = new Popup();
+gameFinishiBanner.setClickListener(() => {
+    startGame();
+});
 
 // (e) => onFieldClick(event); = onFieldClick; 생략버전
 field.addEventListener("click", onFieldClick);
@@ -48,7 +53,8 @@ function stopGame() {
     started = false;
     stopGameTimer();
     hideGameButton();
-    showPopUpWithText("REPLAY?");
+    gameFinishiBanner.showWithText("REPLAY??");
+    // showPopUpWithText("REPLAY?"); popup.js에 팝업텍스트 관련 맴버함수를 만들어줬기 때문에 지워준다.
     playSound(alertSound);
     stopSound(bgSound);
     // showPlayButton();
@@ -65,7 +71,9 @@ function finishGame(win) {
     }
     stopGameTimer();
     stopSound(bgSound);
-    showPopUpWithText(win ? "YOU WON!" : "YOU LOST!");
+
+    gameFinishiBanner.showWithText(win ? "YOU WON!!" : "YOU LOST!!");
+    // showPopUpWithText(win ? "YOU WON!" : "YOU LOST!");
 }
 
 // replay btn 클릭 이벤트
@@ -79,14 +87,16 @@ function finishGame(win) {
 //     console.log(started);
 // });
 
-restart.addEventListener("click", () => {
-    startGame();
-    hidePopUp();
-});
+// popup.js에 새로 추가(리펙토링)
+// restart.addEventListener("click", () => {
+//     startGame();
+//     hidePopUp();
+// });
 
-function hidePopUp() {
-    popUp.classList.add("pop-up--hide");
-}
+// popup.js hide 함수에 새로 추가(리펙토링)
+// function hidePopUp() {
+//     popUp.classList.add("pop-up--hide");
+// }
 
 function startGameTimer() {
     let remainingTimeSec = GAME__DURATION_SEC;
@@ -99,7 +109,7 @@ function startGameTimer() {
         }
         updateTimerText(--remainingTimeSec);
     }, 1000);
-    popUp.classList.add("pop-up--hide");
+    // popUp.classList.add("pop-up--hide");
 }
 
 function stopGameTimer() {
@@ -117,10 +127,10 @@ function updateTimerText(time) {
     gameTimer.innerText = `${minutes}:${seconds}`;
 }
 
-function showPopUpWithText(text) {
-    popUpText.innerText = text;
-    popUp.classList.remove("pop-up--hide");
-}
+// function showPopUpWithText(text) {
+//     popUpText.innerText = text;
+//     popUp.classList.remove("pop-up--hide");
+// }
 
 function timeCount() {
     let time = 5;
@@ -164,15 +174,35 @@ function initGame() {
     field.innerHTML = "";
     gameScore.innerText = CARROT_COUNT;
     // 벌레와 당근을 생선한뒤 field에 추가해줍니다.
-    console.log(fieldRect);
     addItem("carrot", CARROT_COUNT, "./img/carrot.png");
     addItem("bug", BUG_COUNT, "./img/bug.png");
 }
 
+function addItem(className, count, imgPath) {
+    const x1 = 0;
+    const y1 = 0;
+    // img는 x,y축의 랜덤 값을 받아 position을 통해 자리를 잡는다.
+    // game__field 제일 하단에 자리를 잡을 경우 (x,y)축 기준에서 이미지의 크기 만큼 자리를 잡기 때문에
+    // fieldRect.width(height)에서 사이즈가 가장 큰 당근 이미지의 크기 만큼 빼줘야 필드 밖으로 벗어나는 상황을 직면하지 않는다.
+    const x2 = fieldRect.width - CARROT_SIZE;
+    const y2 = fieldRect.height - CARROT_SIZE;
+
+    for (let i = 0; i < count; i++) {
+        const item = document.createElement("img");
+        item.setAttribute("class", className);
+        item.setAttribute("src", imgPath);
+        item.style.position = "absolute";
+        const x = randomNumber(x1, x2);
+        const y = randomNumber(y1, y2);
+
+        item.style.left = `${x}px`;
+        item.style.top = `${y}px`;
+        field.appendChild(item);
+    }
+}
+
 function onFieldClick(event) {
-    console.log(started, "started");
     if (!started) {
-        console.log(started, "in if started");
         return;
     }
     const target = event.target;
@@ -203,29 +233,6 @@ function stopSound(sound) {
 
 function updateScoreBoard() {
     gameScore.innerText = CARROT_COUNT - score;
-}
-
-function addItem(className, count, imgPath) {
-    const x1 = 0;
-    const y1 = 0;
-    // img는 x,y축의 랜덤 값을 받아 position을 통해 자리를 잡는다.
-    // game__field 제일 하단에 자리를 잡을 경우 (x,y)축 기준에서 이미지의 크기 만큼 자리를 잡기 때문에
-    // fieldRect.width(height)에서 사이즈가 가장 큰 당근 이미지의 크기 만큼 빼줘야 필드 밖으로 벗어나는 상황을 직면하지 않는다.
-    const x2 = fieldRect.width - CARROT_SIZE;
-    const y2 = fieldRect.height - CARROT_SIZE;
-
-    for (let i = 0; i < count; i++) {
-        const item = document.createElement("img");
-        item.setAttribute("class", className);
-        item.setAttribute("src", imgPath);
-        item.style.position = "absolute";
-        const x = randomNumber(x1, x2);
-        const y = randomNumber(y1, y2);
-
-        item.style.left = `${x}px`;
-        item.style.top = `${y}px`;
-        field.appendChild(item);
-    }
 }
 
 function randomNumber(min, max) {
