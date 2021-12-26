@@ -13,6 +13,7 @@ const popUp = document.querySelector(".pop-up");
 const popUpText = document.querySelector(".pop-up__message");
 const restart = document.querySelector(".pop-up__refresh");
 
+const carrotSound = new Audio("./sound/carrot_pull.mp3");
 let started = false;
 let score = 0;
 let timer = undefined; // timer가 시적되면 타이머가 시간을 기억하고 있어야 합니다.
@@ -31,6 +32,7 @@ gameBtn.addEventListener("click", () => {
 
 function startGame() {
     started = true;
+    score = 0;
     initGame();
     showStopButton();
     showTimerAndScore();
@@ -152,7 +154,9 @@ function initGame() {
 }
 
 function onFieldClick(event) {
+    console.log(started, "started");
     if (!started) {
+        console.log(started, "in if started");
         return;
     }
     const target = event.target;
@@ -161,6 +165,7 @@ function onFieldClick(event) {
         // 당근
         target.remove();
         score++;
+        playSound(carrotSound);
         updateScoreBoard();
         if (score === CARROT_COUNT) {
             finishGame(true);
@@ -170,6 +175,10 @@ function onFieldClick(event) {
         stopGameTimer();
         finishGame(false);
     }
+}
+
+function playSound(sound) {
+    sound.play();
 }
 
 function updateScoreBoard() {
